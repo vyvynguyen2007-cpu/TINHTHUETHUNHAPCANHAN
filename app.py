@@ -4,7 +4,10 @@ import streamlit as st
 st.set_page_config(page_title="App Tính Thuế TNCN Việt Nam 2026", page_icon="💰", layout="centered")
 
 # --- CHÈN LOGO THEO FILE TRỰC TIẾP ---
-st.image("logo.jpg")
+try:
+    st.image("logo.jpg")
+except:
+    pass # Bỏ qua nếu chưa có file logo để code không bị lỗi dừng hoạt động
 
 # --- THÔNG TIN THÀNH VIÊN VÀ ĐỀ TÀI ---
 st.markdown("### 📝 **TS. VŨ ĐỨC BÌNH**")
@@ -35,7 +38,6 @@ overtime_pay = st.number_input(
 st.markdown("**4. Các khoản phụ cấp nhận bằng tiền mặt:**")
 col_sub1, col_sub2 = st.columns(2)
 with col_sub1:
-    # Đã bỏ ghi chú tối đa
     lunch_allowance = st.number_input("Phụ cấp ăn trưa (VND):", min_value=0, value=0, step=50000)
 with col_sub2:
     other_allowance = st.number_input("Phụ cấp điện thoại, xăng xe (VND):", min_value=0, value=0, step=50000)
@@ -78,8 +80,10 @@ def tinh_thue_tncn(gross, bonus, overtime, lunch, other, deps):
     temp_income = assessable_income
     previous_limit = 0
     tax_breakdown = []
-    for b in brackets: range_size = b["limit"] - previous_limit
-    if temp_income > 0:
+    
+    for b in brackets:
+        range_size = b["limit"] - previous_limit
+        if temp_income > 0:
             taxable_in_bracket = min(temp_income, range_size)
             tax_in_bracket = taxable_in_bracket * b["rate"]
             tax += tax_in_bracket
@@ -92,15 +96,18 @@ def tinh_thue_tncn(gross, bonus, overtime, lunch, other, deps):
             
             temp_income -= taxable_in_bracket
             previous_limit = b["limit"]
-    else:
-            break 
-        
-    net_salary = total_income - total_insurance - tax 
-    return { "total_income": total_income, "bhxh": bhxh, "bhyt": bhyt, "bhtn": bhtn,
+        else:
+            break
+
+    net_salary = total_income - total_insurance - tax
+    
+    return {
+        "total_income": total_income, "bhxh": bhxh, "bhyt": bhyt, "bhtn": bhtn,
         "total_insurance": total_insurance, "dependent_reduction": dependent_reduction,
         "exempt_lunch": exempt_lunch, "exempt_allowance": exempt_allowance,
         "assessable_income": assessable_income, "tax": tax, "net_salary": net_salary,
-        "tax_breakdown": tax_breakdown }
+        "tax_breakdown": tax_breakdown
+    }
 
 # --- PHẦN NÚT BẤM KÍCH HOẠT VÀ HIỂN THỊ KẾT QUẢ ---
 if st.button("🧮 Tính Thuế & Nhận Kết Quả", type="primary"):
@@ -121,16 +128,16 @@ if st.button("🧮 Tính Thuế & Nhận Kết Quả", type="primary"):
     st.subheader("📜 Giải Trình Chi Tiết Quy Trình Khấu Trừ (Năm 2026)")
     
     st.markdown(f"""
-    * **Tổng thu nhập phát sinh trong tháng:** `{res['total_income']:,.0f} VND`
-    * **Các khoản được miễn trừ thuế:**
-        * Tiền lương tăng ca: `{overtime_pay:,.0f} VND`
-        * Tiền ăn trưa được miễn: `{res['exempt_lunch']:,.0f} VND`
-        * Phụ cấp công việc (xăng xe, điện thoại): `{res['exempt_allowance']:,.0f} VND`
-    * **Các khoản phí bảo hiểm bắt buộc trích từ lương chính:**
-        * BHXH (8%): `{res['bhxh']:,.0f} VND` | BHYT (1.5%): `{res['bhyt']:,.0f} VND` | BHTN (1%): `{res['bhtn']:,.0f} VND`
-        * **Tổng phí bảo hiểm:** `{res['total_insurance']:,.0f} VND`
-    * **Giảm trừ gia cảnh:**
-        * Giảm trừ bản thân người nộp: `15,500,000 VND`
+* **Tổng thu nhập phát sinh trong tháng:** `{res['total_income']:,.0f} VND`
+* **Các khoản được miễn trừ thuế:**
+    * Tiền lương tăng ca: `{overtime_pay:,.0f} VND`
+    * Tiền ăn trưa được miễn: `{res['exempt_lunch']:,.0f} VND`
+    * Phụ cấp công việc (xăng xe, điện thoại): `{res['exempt_allowance']:,.0f} VND`
+* **Các khoản phí bảo hiểm bắt buộc trích từ lương chính:**
+    * BHXH (8%): `{res['bhxh']:,.0f} VND` | BHYT (1.5%): `{res['bhyt']:,.0f} VND` | BHTN (1%): `{res['bhtn']:,.0f} VND`
+    * **Tổng phí bảo hiểm:** `{res['total_insurance']:,.0f} VND`
+* **Giảm trừ gia cảnh:**
+    * Giảm trừ bản thân người nộp: `15,500,000 VND`
     * Giảm trừ người phụ thuộc: `{res['dependent_reduction']:,.0f} VND` (cho {dependents} người)
 * **Thu nhập tính thuế (đưa vào bảng lũy tiến):** `{res['assessable_income']:,.0f} VND`
     """)
@@ -139,4 +146,4 @@ if st.button("🧮 Tính Thuế & Nhận Kết Quả", type="primary"):
         st.write("📊 **Chi tiết phân tách số tiền nộp theo biểu thuế 5 bậc mới (2026):**")
         st.table(res['tax_breakdown'])
     else:
-        st.success("Tuyệt vời! Sau khi trừ các khoản phụ cấp miễn thuế và giảm trừ gia cảnh, thu nhập tính thuế của bạn bằng 0 nên không cần phải nộp thuế TNCN.")
+        st.success("Tuyệt vời! Thu nhập tính thuế của bạn bằng 0 nên không cần phải nộp thuế TNCN.")

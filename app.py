@@ -79,8 +79,8 @@ def tinh_thue_tncn(gross, bonus, overtime, lunch, other, deps):
     previous_limit = 0
     tax_breakdown = []
     for b in brackets:
-      range_size = b["limit"] - previous_limit
-    if temp_income > 0:
+range_size = b["limit"] - previous_limit
+        if temp_income > 0:
             taxable_in_bracket = min(temp_income, range_size)
             tax_in_bracket = taxable_in_bracket * b["rate"]
             tax += tax_in_bracket
@@ -136,7 +136,7 @@ if st.button("🧮 Tính Thuế & Nhận Kết Quả", type="primary"):
     * **Giảm trừ gia cảnh:**
         * Giảm trừ bản thân người nộp: `15,500,000 VND`
     * Giảm trừ người phụ thuộc: `{res['dependent_reduction']:,.0f} VND` (cho {dependents} người)
-  * **Thu nhập tính thuế (đưa vào bảng lũy tiến):** `{res['assessable_income']:,.0f} VND`
+* **Thu nhập tính thuế (đưa vào bảng lũy tiến):** `{res['assessable_income']:,.0f} VND`
     """)
     
     if res['tax'] > 0:

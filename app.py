@@ -93,7 +93,9 @@ def tinh_thue_tncn(gross, bonus, overtime, lunch, other, deps):
             temp_income -= taxable_in_bracket
             previous_limit = b["limit"]
     else:
-            break net_salary = total_income - total_insurance - tax 
+            break 
+        
+    net_salary = total_income - total_insurance - tax 
     return { "total_income": total_income, "bhxh": bhxh, "bhyt": bhyt, "bhtn": bhtn,
         "total_insurance": total_insurance, "dependent_reduction": dependent_reduction,
         "exempt_lunch": exempt_lunch, "exempt_allowance": exempt_allowance,

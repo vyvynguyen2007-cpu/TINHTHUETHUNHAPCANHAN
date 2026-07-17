@@ -93,17 +93,12 @@ def tinh_thue_tncn(gross, bonus, overtime, lunch, other, deps):
             temp_income -= taxable_in_bracket
             previous_limit = b["limit"]
         else:
-            break
-
-    net_salary = total_income - total_insurance - tax
-    
-    return {
-        "total_income": total_income, "bhxh": bhxh, "bhyt": bhyt, "bhtn": bhtn,
+            break net_salary = total_income - total_insurance - tax 
+    return { "total_income": total_income, "bhxh": bhxh, "bhyt": bhyt, "bhtn": bhtn,
         "total_insurance": total_insurance, "dependent_reduction": dependent_reduction,
         "exempt_lunch": exempt_lunch, "exempt_allowance": exempt_allowance,
         "assessable_income": assessable_income, "tax": tax, "net_salary": net_salary,
-        "tax_breakdown": tax_breakdown
-    }
+        "tax_breakdown": tax_breakdown }
 
 # --- PHẦN NÚT BẤM KÍCH HOẠT VÀ HIỂN THỊ KẾT QUẢ ---
 if st.button("🧮 Tính Thuế & Nhận Kết Quả", type="primary"):
